@@ -14,11 +14,11 @@ public class PluginController {
     @Autowired
     private PluginService pluginService;
 
-    // Endpoint to receive plugin heartbeats
     @PostMapping("/heartbeat")
-    public void receiveHeartbeat(@RequestParam String pluginId) {
-        pluginService.updateHeartbeat(pluginId);
-    }
+    public void receiveHeartbeat(@RequestParam("pluginId") String pluginId) {
+        System.out.println("Received heartbeat from: " + pluginId);
+        // Handle heartbeat logic
+    }    
 
     // Endpoint to get the list of connected plugins
     @GetMapping("/connected")
