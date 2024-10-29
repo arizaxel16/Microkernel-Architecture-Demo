@@ -18,7 +18,8 @@ public class PluginController {
     public void receiveHeartbeat(@RequestParam("pluginId") String pluginId) {
         System.out.println("Received heartbeat from: " + pluginId);
         // Handle heartbeat logic
-    }    
+        pluginService.updateHeartbeat(pluginId);
+    }
 
     // Endpoint to get the list of connected plugins
     @GetMapping("/connected")

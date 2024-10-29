@@ -13,7 +13,7 @@ public class PluginService {
     private final Map<String, LocalDateTime> pluginHeartbeatMap = new HashMap<>();
 
     // Timeout after which a plugin is considered disconnected
-    private static final long TIMEOUT_SECONDS = 30;
+    private static final long TIMEOUT_SECONDS = 10;
 
     // Update plugin heartbeat timestamp
     public void updateHeartbeat(String pluginId) {

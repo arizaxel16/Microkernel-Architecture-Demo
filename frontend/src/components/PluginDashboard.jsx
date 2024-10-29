@@ -8,7 +8,7 @@ const PluginDashboard = () => {
 	useEffect(() => {
 		const fetchPlugins = () => {
 			axios
-				.get("/api/plugins/connected")
+				.get("http://localhost:8080/api/plugins/connected")
 				.then((response) => setPlugins(response.data))
 				.catch((error) => console.error(error));
 		};
