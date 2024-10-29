@@ -14,7 +14,7 @@ const Login = () => {
             const response = await axios.post('http://localhost:8080/auth/login', { username, password });
             
             // Check the response body for success message
-            if (response.data === "Login successful") {
+            if (response.status === 200) {
                 navigate('/dashboard'); // Navigate to the dashboard on successful login
             } else {
                 setError(response.data); // Set error message from response
