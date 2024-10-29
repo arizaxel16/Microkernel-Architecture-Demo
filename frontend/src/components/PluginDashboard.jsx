@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import './PluginDashboard.css'
 
 const PluginDashboard = () => {
 	const [plugins, setPlugins] = useState([]);
@@ -20,7 +21,7 @@ const PluginDashboard = () => {
 	}, []);
 
 	return (
-		<div>
+		<div className="plugin-container">
 			<h1>Connected Plugins</h1>
 			<ul>
 				{plugins.map((plugin, index) => (

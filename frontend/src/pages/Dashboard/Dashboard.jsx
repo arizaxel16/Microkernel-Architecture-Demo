@@ -1,11 +1,11 @@
 import React from 'react';
-import PluginDashboard from '../components/PluginDashboard'
+import PluginDashboard from '../../components/PluginDashboard'
+import './Dashboard.css'
 
 const Dashboard = () => {
     return (
-        <div>
-            <h2>Dashboard</h2>
-            <p>Welcome to the dashboard!</p>
+        <div className='dashboard-container'>
+            <h1>Welcome to the dashboard!</h1>
             <h3>Plugins:</h3>
             <PluginDashboard />
         </div>
