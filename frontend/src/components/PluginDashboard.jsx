@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "./PluginDashboard.css";
 
 const PluginDashboard = () => {
 	const [plugins, setPlugins] = useState([]);
 
 	// Fetch the list of connected plugins periodically
 	useEffect(() => {
-		const fetchPlugins = () => {
-			axios
-				.get("http://localhost:8080/api/plugins/connected")
-				.then((response) => setPlugins(response.data))
-				.catch((error) => console.error(error));
+		const fetchPlugins = async () => {
+			try {
+				const response = await axios.get(
+					"http://localhost:8080/api/plugins/connected"
+				);
+				setPlugins(response.data);
+			} catch (error) {
+				console.error(error);
+			}
 		};
 
 		fetchPlugins();
@@ -20,11 +25,25 @@ const PluginDashboard = () => {
 	}, []);
 
 	return (
-		<div>
-			<h1>Connected Plugins</h1>
+		<div className="plugin-container">
+			<div className="table-header">
+				<div className="header__item">Plugin</div>
+				<div className="header__item">Status</div>
+			</div>
+
 			<ul>
 				{plugins.map((plugin, index) => (
-					<li key={index}>{plugin}</li>
+					<li
+						key={index}
+						className={
+							index % 2 === 0 ? "table-row even-row" : "table-row odd-row"
+						}
+					>
+						<div className="table-data">{plugin.name || plugin}</div>
+						<div className="table-data">
+							CONNECTED <span className="green-circle"></span>
+						</div>
+					</li>
 				))}
 			</ul>
 		</div>
