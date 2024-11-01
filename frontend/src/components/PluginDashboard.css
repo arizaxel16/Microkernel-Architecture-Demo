@@ -58,3 +58,28 @@ ul {
     margin-left: 5px;
     vertical-align: middle;
 }
+
+.red-circle {
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+.toggleButton {
+    padding: 5px 10px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 18px;
+    margin: 0px;
+    width: 74%;
+}
+
+.toggleButton:hover {
+    background-color: #0056b3;
+}

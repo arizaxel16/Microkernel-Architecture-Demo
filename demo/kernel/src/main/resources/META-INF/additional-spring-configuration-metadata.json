@@ -1,0 +1,7 @@
+{"properties": [
+  {
+    "name": "plugins.directory",
+    "type": "java.lang.String",
+    "description": "path to .jar file directory"
+  }
+]}

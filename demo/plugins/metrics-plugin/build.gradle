@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+}
+
+dependencies {
+    implementation project(':kernel')
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework.boot:spring-boot-starter'
+}
+
+jar {
+    enabled = true
+    manifest {
+        attributes(
+            'Plugin-Name': 'logging-plugin',
+            'Plugin-Version': '1.0.0',
+            'Plugin-Class': 'com.plugins.metrics.MetricsPlugin'
+        )
+    }
+    from('src/main/resources/META-INF/services') {
+        into 'META-INF/services'
+    }
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
