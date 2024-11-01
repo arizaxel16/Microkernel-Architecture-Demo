@@ -1,116 +1,61 @@
 package com.core.plugin;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
-import jakarta.annotation.PostConstruct;
-import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.*;
-import java.util.jar.JarFile;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
-@Component
-@Configuration
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Service
 public class PluginManager {
-    private static final Logger logger = LoggerFactory.getLogger(PluginManager.class);
-    private final Map<String, Plugin> loadedPlugins = new HashMap<>();
+    private final PluginLoader pluginLoader;
+    private final List<Plugin> plugins = new ArrayList<>();
 
-    @Value("${plugins.directory:plugins}")
-    private String pluginsDirectory;
+    public PluginManager(@Value("${plugins.directory}") String pluginsDirectory, ApplicationContext context) throws Exception {
+        pluginLoader = new PluginLoader();
+        pluginLoader.loadPlugins(pluginsDirectory);
 
-    @PostConstruct
-    public void init() {
-        logger.info("Initializing PluginManager...");
-        logger.info("Plugins directory: {}", new File(pluginsDirectory).getAbsolutePath());
-        loadPlugins();
-        logLoadedPlugins();
+        // Add plugins loaded from JAR files
+        plugins.addAll(pluginLoader.getLoadedPlugins());
+
+        // Add project plugins loaded by Spring
+        Map<String, Plugin> projectPlugins = context.getBeansOfType(Plugin.class);
+        plugins.addAll(projectPlugins.values());
+
+        System.out.println("Project plugins loaded: " + plugins);
     }
 
-    private void loadPlugins() {
-        File pluginsDir = new File(pluginsDirectory);
-        if (!pluginsDir.exists()) {
-            logger.info("Creating plugins directory at: {}", pluginsDir.getAbsolutePath());
-            pluginsDir.mkdirs();
-            return;
+    public String enablePlugin(String name) {
+        for (Plugin plugin : plugins) {
+            if (plugin.getName().equals(name)) {
+                plugin.init();
+                System.out.println("Enabled plugin: " + plugin.getName());
+                return plugin.getName();
+            }
         }
+        System.out.println("Plugin not found: " + name);
+        return "Plugin not found (404)";
+    }
 
-        File[] jarFiles = pluginsDir.listFiles((dir, name) -> name.endsWith(".jar"));
-        if (jarFiles == null) {
-            logger.warn("No plugin JAR files found in directory: {}", pluginsDir.getAbsolutePath());
-            return;
-        }
-
-        logger.info("Found {} potential plugin files", jarFiles.length);
-        for (File jar : jarFiles) {
-            try {
-                logger.info("Attempting to load plugin from: {}", jar.getName());
-                loadPlugin(jar);
-            } catch (Exception e) {
-                logger.error("Failed to load plugin: " + jar.getName(), e);
+    public void disablePlugin(String name) {
+        for (Plugin plugin : plugins) {
+            if (plugin.getName().equals(name)) {
+                plugin.stop();
             }
         }
     }
 
-    private void loadPlugin(File jarFile) throws Exception {
-        URL[] urls = { jarFile.toURI().toURL() };
-        try (URLClassLoader classLoader = new URLClassLoader(urls, getClass().getClassLoader());
-                JarFile jar = new JarFile(jarFile)) {
-
-            jar.entries().asIterator().forEachRemaining(entry -> {
-                if (entry.getName().endsWith(".class")) {
-                    try {
-                        String className = entry.getName().replace('/', '.').replace(".class", "");
-                        Class<?> clazz = classLoader.loadClass(className);
-
-                        if (Plugin.class.isAssignableFrom(clazz) && !clazz.isInterface()) {
-                            logger.info("Found plugin class: {}", className);
-                            Plugin plugin = (Plugin) clazz.getDeclaredConstructor().newInstance();
-                            registerPlugin(plugin);
-                        }
-                    } catch (Exception e) {
-                        logger.debug("Skipping non-plugin class: {}", entry.getName());
-                    }
-                }
-            });
+    public List<Map<String, Object>> getPluginsStatus() {
+        List<Map<String, Object>> statusList = new ArrayList<>();
+        for (Plugin plugin : plugins) {
+            Map<String, Object> status = new HashMap<>();
+            status.put("name", plugin.getName());
+            status.put("enabled", plugin.isEnabled());
+            statusList.add(status);
         }
-    }
-
-    public void registerPlugin(Plugin plugin) {
-        logger.info("Registering plugin: {} (version {})", plugin.getName(), plugin.getVersion());
-        plugin.init();
-        loadedPlugins.put(plugin.getName(), plugin);
-        plugin.start();
-        logger.info("Plugin {} successfully started", plugin.getName());
-    }
-
-    public void unregisterPlugin(String pluginName) {
-        Plugin plugin = loadedPlugins.get(pluginName);
-        if (plugin != null) {
-            logger.info("Unregistering plugin: {}", pluginName);
-            plugin.stop();
-            loadedPlugins.remove(pluginName);
-            logger.info("Plugin {} successfully unregistered", pluginName);
-        } else {
-            logger.warn("Attempted to unregister non-existent plugin: {}", pluginName);
-        }
-    }
-
-    private void logLoadedPlugins() {
-        if (loadedPlugins.isEmpty()) {
-            logger.info("No plugins currently loaded");
-        } else {
-            logger.info("Currently loaded plugins:");
-            loadedPlugins.forEach((name, plugin) -> 
-                logger.info("- {} (version {})", name, plugin.getVersion()));
-        }
-    }
-
-    @Bean
-    public Map<String, Plugin> getLoadedPlugins() {
-        return Collections.unmodifiableMap(loadedPlugins);
+        return statusList;
     }
 }

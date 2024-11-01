@@ -3,8 +3,9 @@ package com.plugins.metrics;
 import com.core.plugin.Plugin;
 import org.springframework.stereotype.Component;
 
+@Component
 public class MetricsPlugin implements Plugin {
-    private boolean running = false;
+    boolean running = false;
 
     @Override
     public String getName() {
@@ -14,6 +15,7 @@ public class MetricsPlugin implements Plugin {
     @Override
     public void init() {
         System.out.println("Initializing metrics Plugin");
+        start();
     }
 
     @Override
@@ -31,5 +33,10 @@ public class MetricsPlugin implements Plugin {
     @Override
     public String getVersion() {
         return "1.0.0";
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return running;
     }
 }

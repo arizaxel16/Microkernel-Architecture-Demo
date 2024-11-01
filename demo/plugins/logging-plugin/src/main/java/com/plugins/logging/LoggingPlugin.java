@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class LoggingPlugin implements Plugin {
-    private boolean running = false;
+    boolean running = false;
 
     @Override
     public String getName() {
@@ -15,6 +15,7 @@ public class LoggingPlugin implements Plugin {
     @Override
     public void init() {
         System.out.println("Initializing Logging Plugin");
+        start();
     }
 
     @Override
@@ -32,5 +33,10 @@ public class LoggingPlugin implements Plugin {
     @Override
     public String getVersion() {
         return "1.0.0";
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return running;
     }
 }

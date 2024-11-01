@@ -17,4 +17,10 @@ jar {
             'Plugin-Class': 'com.plugins.logging.LoggingPlugin'
         )
     }
+    // Ensure that META-INF/services gets added to the JAR
+    from('src/main/resources/META-INF/services') {
+        into 'META-INF/services'
+    }
+    // Handle duplicates by allowing them (or you can choose 'exclude' if needed)
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }

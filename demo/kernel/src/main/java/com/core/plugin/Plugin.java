@@ -6,4 +6,5 @@ public interface Plugin {
     void start();
     void stop();
     String getVersion();
+    boolean isEnabled();
 }
