@@ -1,2 +1,5 @@
-rootProject.name = 'core'
+rootProject.name = 'demo'
 include 'kernel'
+include 'plugins'
+include 'plugins:logging-plugin'
+include 'plugins:metrics-plugin'
