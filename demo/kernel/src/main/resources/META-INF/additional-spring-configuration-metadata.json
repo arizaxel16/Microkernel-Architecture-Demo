@@ -1,9 +1,0 @@
-{
-	"properties": [
-		{
-			"name": "plugins.directory",
-			"type": "java.lang.String",
-			"description": "Directory path for plugins"
-		}
-	]
-}

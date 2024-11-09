@@ -1,6 +1,5 @@
 package com.core.plugin;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +18,7 @@ public class PluginManager {
     private final ApplicationContext context;
     private final List<Plugin> plugins = new ArrayList<>();
 
-    @Value("${plugins.directory}")
-    private String pluginsDirectory;
+    private String pluginsDirectory = "demo/kernel/src/main/java/com/core/plugins";  // Path to .jar plugin files
 
     @PostConstruct
     public void init() {
