@@ -4,28 +4,34 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@RequiredArgsConstructor
 @Service
 public class PluginManager {
-    private final PluginLoader pluginLoader;
+    private final PluginLoader pluginLoader = new PluginLoader();
+    private final ApplicationContext context;
     private final List<Plugin> plugins = new ArrayList<>();
 
-    public PluginManager(@Value("${plugins.directory}") String pluginsDirectory, ApplicationContext context) throws Exception {
-        pluginLoader = new PluginLoader();
-        pluginLoader.loadPlugins(pluginsDirectory);
+    @Value("${plugins.directory}")
+    private String pluginsDirectory;
 
-        // Add plugins loaded from JAR files
-        plugins.addAll(pluginLoader.getLoadedPlugins());
-
-        // Add project plugins loaded by Spring
-        Map<String, Plugin> projectPlugins = context.getBeansOfType(Plugin.class);
-        plugins.addAll(projectPlugins.values());
-
-        System.out.println("Project plugins loaded: " + plugins);
+    @PostConstruct
+    public void init() {
+        try {
+            pluginLoader.loadPlugins(pluginsDirectory);
+            plugins.addAll(pluginLoader.getLoadedPlugins());
+            plugins.addAll(context.getBeansOfType(Plugin.class).values());
+            System.out.println("Project plugins loaded: " + plugins);
+        } catch (Exception e) {
+            System.err.println("Error loading plugins: " + e.getMessage());
+        }
     }
 
     public String enablePlugin(String name) {
