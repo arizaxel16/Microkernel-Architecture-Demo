@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
+@Slf4j
 @Service
 public class PluginManager {
     private final PluginLoader pluginLoader = new PluginLoader();
@@ -26,9 +28,9 @@ public class PluginManager {
             pluginLoader.loadPlugins(pluginsDirectory);
             plugins.addAll(pluginLoader.getLoadedPlugins());
             plugins.addAll(context.getBeansOfType(Plugin.class).values());
-            System.out.println("Project plugins loaded: " + plugins);
+            log.info("Project plugins loaded: {}", plugins);
         } catch (Exception e) {
-            System.err.println("Error loading plugins: " + e.getMessage());
+            log.error("Error loading plugins: {}", e.getMessage());
         }
     }
 
@@ -36,11 +38,11 @@ public class PluginManager {
         for (Plugin plugin : plugins) {
             if (plugin.getName().equals(name)) {
                 plugin.init();
-                System.out.println("Enabled plugin: " + plugin.getName());
+                log.info("Enabled plugin: {}", plugin.getName());
                 return plugin.getName();
             }
         }
-        System.out.println("Plugin not found: " + name);
+        log.warn("Plugin not found: {}", name);
         return "Plugin not found (404)";
     }
 

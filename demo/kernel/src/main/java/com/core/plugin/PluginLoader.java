@@ -1,5 +1,7 @@
 package com.core.plugin;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -8,6 +10,7 @@ import java.util.List;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+@Slf4j
 public class PluginLoader {
     private final List<Plugin> loadedPlugins = new ArrayList<>();
 
@@ -16,34 +19,34 @@ public class PluginLoader {
         if (!dir.exists() || !dir.isDirectory()) {
             throw new IllegalArgumentException("Plugin directory not found: " + pluginsDirectory);
         } else {
-            System.out.println("Directory Found: " + pluginsDirectory);
+            log.info("Directory Found: {}", pluginsDirectory);
         }
 
         File[] files = dir.listFiles((d, name) -> name.endsWith(".jar"));
         if (files == null || files.length == 0) {
-            System.out.println("No plugin JAR files found in the directory.");
+            log.warn("No plugin JAR files found in the directory.");
             return;
         }
 
         for (File file : files) {
-            System.out.println("Loading JAR: " + file.getName());
+            log.info("Loading JAR: {}", file.getName());
 
             // Open the JAR file to read the manifest
             try (JarFile jarFile = new JarFile(file)) {
                 Manifest manifest = jarFile.getManifest();
                 if (manifest == null) {
-                    System.out.println("No manifest found in JAR: " + file.getName());
+                    log.warn("No manifest found in JAR: {}", file.getName());
                     continue;
                 }
 
                 // Get the Plugin-Class attribute from the manifest
                 String pluginClassName = manifest.getMainAttributes().getValue("Plugin-Class");
                 if (pluginClassName == null || pluginClassName.isEmpty()) {
-                    System.out.println("No Plugin-Class attribute in JAR: " + file.getName());
+                    log.warn("No Plugin-Class attribute in JAR: {}", file.getName());
                     continue;
                 }
 
-                System.out.println("Plugin class found in manifest: " + pluginClassName);
+                log.info("Plugin class found in manifest: {}", pluginClassName);
 
                 // Load the plugin class from the JAR
                 try (URLClassLoader classLoader = new URLClassLoader(new URL[]{file.toURI().toURL()}, Plugin.class.getClassLoader())) {
@@ -53,13 +56,13 @@ public class PluginLoader {
                     if (Plugin.class.isAssignableFrom(pluginClass)) {
                         Plugin plugin = (Plugin) pluginClass.getDeclaredConstructor().newInstance();
                         loadedPlugins.add(plugin);
-                        System.out.println("Plugin loaded: " + plugin.getName() + " (Version: " + plugin.getVersion() + ")");
+                        log.info("Plugin loaded: {} (Version: {})", plugin.getName(), plugin.getVersion());
                     } else {
-                        System.out.println("Class " + pluginClassName + " does not implement Plugin interface.");
+                        log.warn("Class {} does not implement Plugin interface.", pluginClassName);
                     }
                 }
             } catch (Exception e) {
-                System.err.println("Error loading plugin from " + file.getName() + ": " + e.getMessage());
+                log.error("Error loading plugin from {}: {}", file.getName(), e.getMessage());
             }
         }
     }

@@ -14,20 +14,17 @@ public class LoggingPlugin implements Plugin {
 
     @Override
     public void init() {
-        System.out.println("Initializing Logging Plugin");
         start();
     }
 
     @Override
     public void start() {
         running = true;
-        System.out.println("Logging Plugin Started");
     }
 
     @Override
     public void stop() {
         running = false;
-        System.out.println("Logging Plugin Stopped");
     }
 
     @Override
