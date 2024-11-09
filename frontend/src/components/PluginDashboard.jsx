@@ -31,8 +31,6 @@ const PluginDashboard = () => {
 				`http://localhost:8080/plugins/${action}?name=${pluginName}`
 			);
 
-			alert(response.data);
-
 			// Re-fetch plugins after toggling state
 			setPlugins((prev) =>
 				prev.map((plugin) =>
