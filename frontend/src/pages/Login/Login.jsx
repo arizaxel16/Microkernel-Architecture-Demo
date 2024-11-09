@@ -12,6 +12,7 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            // Main kernel functionalities through endpoint
             const response = await axios.post('http://localhost:8080/auth/login', { username, password });
             
             // Check the response body for success message
