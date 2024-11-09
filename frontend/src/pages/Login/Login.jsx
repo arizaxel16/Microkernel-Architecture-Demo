@@ -13,18 +13,15 @@ const Login = () => {
         e.preventDefault();
         try {
             // Main kernel functionalities through endpoint
-            const response = await axios.post('http://localhost:8080/auth/login', { username, password });
-            
-            // Check the response body for success message
+            const response = await axios.post('http://localhost:8080/auth/login', { username, password });        
             if (response.status === 200) {
-                navigate('/dashboard'); // Navigate to the dashboard on successful login
+                navigate('/dashboard');
             } else {
-                setError(response.data); // Set error message from response
+                setError(response.data);
             }
         } catch (err) {
-            // Handle error, including network errors
             if (err.response) {
-                setError(err.response.data); // Set error message from response body
+                setError(err.response.data);
             } else {
                 setError('An error occurred. Please try again.');
             }

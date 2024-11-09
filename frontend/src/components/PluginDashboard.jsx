@@ -5,11 +5,10 @@ import "./PluginDashboard.css";
 const PluginDashboard = () => {
 	const [plugins, setPlugins] = useState([]);
 
-	// Fetch the list of plugins periodically
 	useEffect(() => {
 		const fetchPlugins = async () => {
 			try {
-                // Call kernel endpoint
+                // Update plugin status through kernel communication endpoint
 				const response = await axios.get("http://localhost:8080/plugins");
 				setPlugins(response.data);
 			} catch (error) {
@@ -20,10 +19,9 @@ const PluginDashboard = () => {
 		fetchPlugins();
 		const interval = setInterval(fetchPlugins, 5000); // Update every 5 seconds
 
-		return () => clearInterval(interval); // Cleanup interval on component unmount
+		return () => clearInterval(interval);
 	}, []);
 
-	// Function to toggle plugin enabled/disabled state
 	const togglePlugin = async (pluginName, isEnabled) => {
 		try {
 			const action = isEnabled ? "disable" : "enable";
